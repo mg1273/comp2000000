@@ -18,8 +18,8 @@ public class VehicleManager {
         this.trafficLights = trafficLights;
         vehicles = new ArrayList<>();
         // Create cars
-        Car new1_car = new Car(0, 340, 40f, 50f, 0f, Color.MAGENTA);
-        Car new2_car = new Car(450, 0, 30f, 30f, (float) (Math.PI / 2), Color.MAGENTA);
+        Car new1_car = new Car(0, 340, 30f, 50f, 0f, Color.MAGENTA);
+        Car new2_car = new Car(450, 0, 20f, 30f, (float) (Math.PI / 2), Color.MAGENTA);
         Car new3_car = new Car(740, 440, 10f, 40f, (float) Math.PI, Color.MAGENTA);
         vehicles.add(new1_car);
         vehicles.add(new2_car);

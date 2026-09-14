@@ -11,6 +11,12 @@ public class Car extends Vehicle {
     private float directionRadians;  // 0 = facing +x, increases counter-clockwise
     private final float acceleration; // accel and decel, pixels per second squared
 
+    public float getX() {
+    return x;
+}
+public float getY() {
+    return y;
+}
     public Car(int x, int y, float radius, float speed, float directionRadians, Color color) {
         super(x, y);
 
