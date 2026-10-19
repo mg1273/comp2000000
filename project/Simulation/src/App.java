@@ -52,6 +52,7 @@ public class App {
         pauseButtonSetup(frame, panel);
 
         long[] lastTime = {System.nanoTime()};
+        long[] lastPrintedSecond = {-1};
         long startTime = System.currentTimeMillis();
 
         Timer timer = new Timer(16, e -> {
@@ -63,6 +64,13 @@ public class App {
             lastTime[0] = currentTime;
 
             worldTimeElapsed = (int) (System.currentTimeMillis() - startTime);
+
+            long elapsedSeconds = (long) (worldTimeElapsed / 1000);
+            if (elapsedSeconds != lastPrintedSecond[0]) {
+                System.out.println("Vehicle count: "
+                        + vehicleManager.getVehicleCountsByDirectionDegrees());
+                lastPrintedSecond[0] = elapsedSeconds;
+            }
 
             if (paused) {
                 return;

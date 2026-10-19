@@ -5,7 +5,9 @@
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 public class VehicleManager {
@@ -76,6 +78,13 @@ public class VehicleManager {
 
     public List<Car> getVehicles() {
         return vehicles;
+    }
+
+    public Map<Integer, Long> getVehicleCountsByDirectionDegrees() {
+        return vehicles.stream()
+                .collect(Collectors.groupingBy(
+                        car -> Math.floorMod(Math.round(car.getDirectionDegrees()), 360),
+                        Collectors.counting()));
     }
 
     public boolean isCollidingWithCar(Car car1, Car car2) {
