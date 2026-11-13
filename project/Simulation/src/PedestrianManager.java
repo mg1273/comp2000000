@@ -17,6 +17,9 @@ public class PedestrianManager {
 
     private static final float WALK_SPEED = 100;
 
+    // Minimum distance between pedestrians walking in the same direction
+    private static final float MIN_PEDESTRIAN_GAP = 22;
+
     public PedestrianManager(PedestrianLightManager pedestrianLights,
                              VehicleManager vehicleManager) {
 
@@ -41,10 +44,7 @@ public class PedestrianManager {
                 // Top: right to left
                 case 0:
                     pedestrian = new Pedestrian(
-                        800,
-                        295,
-                        7,
-                        WALK_SPEED,
+                        800, 295, 7, WALK_SPEED,
                         (float) Math.PI
                     );
                     break;
@@ -52,21 +52,14 @@ public class PedestrianManager {
                 // Bottom: left to right
                 case 1:
                     pedestrian = new Pedestrian(
-                        0,
-                        505,
-                        7,
-                        WALK_SPEED,
-                        0
+                        0, 505, 7, WALK_SPEED, 0
                     );
                     break;
 
                 // Left: bottom to top
                 case 2:
                     pedestrian = new Pedestrian(
-                        295,
-                        800,
-                        7,
-                        WALK_SPEED,
+                        295, 800, 7, WALK_SPEED,
                         (float) (3 * Math.PI / 2)
                     );
                     break;
@@ -74,10 +67,7 @@ public class PedestrianManager {
                 // Right: top to bottom
                 case 3:
                     pedestrian = new Pedestrian(
-                        505,
-                        0,
-                        7,
-                        WALK_SPEED,
+                        505, 0, 7, WALK_SPEED,
                         (float) (Math.PI / 2)
                     );
                     break;
@@ -94,14 +84,20 @@ public class PedestrianManager {
                 continue;
             }
 
+            // Check traffic lights
             handleCrossing(pedestrian);
 
-            pedestrian.update(deltaTime);
+            // Only move if there is enough room ahead
+            if (!pedestrianAhead(pedestrian)) {
 
+                pedestrian.update(deltaTime);
+            }
+
+            // Check collision with cars
             checkCarCollision(pedestrian);
         }
 
-        // Remove pedestrians
+        // Remove pedestrians that have left the screen or been hit
         Iterator<Pedestrian> iterator = pedestrians.iterator();
 
         while (iterator.hasNext()) {
@@ -112,6 +108,54 @@ public class PedestrianManager {
                 iterator.remove();
             }
         }
+    }
+
+    // Check whether another pedestrian is directly ahead
+    private boolean pedestrianAhead(Pedestrian current) {
+
+        float currentX = current.getX();
+        float currentY = current.getY();
+
+        double direction = current.getDirectionRadians();
+
+        double directionX = Math.cos(direction);
+        double directionY = Math.sin(direction);
+
+        for (Pedestrian other : pedestrians) {
+
+            if (other == current) {
+                continue;
+            }
+
+            float otherX = other.getX();
+            float otherY = other.getY();
+
+            float differenceX = otherX - currentX;
+            float differenceY = otherY - currentY;
+
+            // Distance in the direction the current pedestrian is walking
+            double forwardDistance =
+                    differenceX * directionX
+                    + differenceY * directionY;
+
+            // Distance sideways from the current pedestrian's path
+            double sidewaysDistance =
+                    Math.abs(
+                        differenceX * directionY
+                        - differenceY * directionX
+                    );
+
+            // Only consider pedestrians on the same walking path
+            if (sidewaysDistance < 3 && forwardDistance > 0) {
+
+                // Stop if another pedestrian is too close ahead
+                if (forwardDistance < MIN_PEDESTRIAN_GAP) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private void handleCrossing(Pedestrian pedestrian) {
@@ -136,10 +180,13 @@ public class PedestrianManager {
             if (x <= 500 && x > 480) {
 
                 if (pedestrianLights.canCrossTop()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -165,10 +212,13 @@ public class PedestrianManager {
             if (x >= 300 && x < 320) {
 
                 if (pedestrianLights.canCrossBottom()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -194,10 +244,13 @@ public class PedestrianManager {
             if (y <= 500 && y > 480) {
 
                 if (pedestrianLights.canCrossLeft()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -223,10 +276,13 @@ public class PedestrianManager {
             if (y >= 300 && y < 320) {
 
                 if (pedestrianLights.canCrossRight()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -240,6 +296,7 @@ public class PedestrianManager {
         }
     }
 
+    // Check collision with vehicles
     private void checkCarCollision(Pedestrian pedestrian) {
 
         float[] pedestrianPosition = {
@@ -259,7 +316,7 @@ public class PedestrianManager {
             );
 
             double collisionDistance =
-                pedestrian.getRadius() + car.getRadius();
+                    pedestrian.getRadius() + car.getRadius();
 
             if (distance <= collisionDistance) {
                 pedestrian.hit();
