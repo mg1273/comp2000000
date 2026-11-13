@@ -9,6 +9,7 @@ public class App {
     static boolean paused = false;
 
     static LightManager trafficLights;
+    static PedestrianLightManager pedestrianLights;
     static private VehicleManager vehicleManager;
     static private PedestrianManager pedestrianManager;
 
@@ -20,6 +21,8 @@ public class App {
         trafficLights = new LightManager();
 
         vehicleManager = new VehicleManager(trafficLights);
+
+        pedestrianLights = new PedestrianLightManager(trafficLights);
 
         pedestrianManager = new PedestrianManager(trafficLights, vehicleManager);
 
@@ -41,6 +44,7 @@ public class App {
                 g.drawLine(width / 2, 0, width / 2, height);
 
                 trafficLights.draw(g);
+                pedestrianLights.draw(g);
 
                 g.setColor(Color.BLACK);
                 g.setFont(new Font("Arial", Font.BOLD, 30));
@@ -80,6 +84,7 @@ public class App {
 
             vehicleManager.update(deltaTime, worldTimeElapsed);
             trafficLights.update();
+            pedestrianLights.update();
             pedestrianManager.update(deltaTime, worldTimeElapsed);
 
             panel.repaint();
