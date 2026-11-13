@@ -41,21 +41,32 @@ public class PedestrianManager {
                 // Top: right to left
                 case 0:
                     pedestrian = new Pedestrian(
-                        800, 295, 7, WALK_SPEED, (float) Math.PI
+                        800,
+                        295,
+                        7,
+                        WALK_SPEED,
+                        (float) Math.PI
                     );
                     break;
 
                 // Bottom: left to right
                 case 1:
                     pedestrian = new Pedestrian(
-                        0, 505, 7, WALK_SPEED, 0
+                        0,
+                        505,
+                        7,
+                        WALK_SPEED,
+                        0
                     );
                     break;
 
                 // Left: bottom to top
                 case 2:
                     pedestrian = new Pedestrian(
-                        295, 800, 7, WALK_SPEED,
+                        295,
+                        800,
+                        7,
+                        WALK_SPEED,
                         (float) (3 * Math.PI / 2)
                     );
                     break;
@@ -63,7 +74,10 @@ public class PedestrianManager {
                 // Right: top to bottom
                 case 3:
                     pedestrian = new Pedestrian(
-                        505, 0, 7, WALK_SPEED,
+                        505,
+                        0,
+                        7,
+                        WALK_SPEED,
                         (float) (Math.PI / 2)
                     );
                     break;
@@ -122,13 +136,10 @@ public class PedestrianManager {
             if (x <= 500 && x > 480) {
 
                 if (pedestrianLights.canCrossTop()) {
-
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
-
                 } else {
-
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -154,13 +165,10 @@ public class PedestrianManager {
             if (x >= 300 && x < 320) {
 
                 if (pedestrianLights.canCrossBottom()) {
-
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
-
                 } else {
-
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -186,13 +194,10 @@ public class PedestrianManager {
             if (y <= 500 && y > 480) {
 
                 if (pedestrianLights.canCrossLeft()) {
-
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
-
                 } else {
-
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -218,13 +223,10 @@ public class PedestrianManager {
             if (y >= 300 && y < 320) {
 
                 if (pedestrianLights.canCrossRight()) {
-
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
-
                 } else {
-
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
