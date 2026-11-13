@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,7 +9,7 @@ public class PedestrianManager {
 
     private List<Pedestrian> pedestrians;
 
-    private LightManager trafficLights;
+    private PedestrianLightManager pedestrianLights;
     private VehicleManager vehicleManager;
 
     private static final int PEDESTRIAN_SPAWN_INTERVAL_MS = 2000;
@@ -16,9 +17,12 @@ public class PedestrianManager {
 
     private static final float WALK_SPEED = 100;
 
-    public PedestrianManager(LightManager trafficLights, VehicleManager vehicleManager) {
-        this.trafficLights = trafficLights;
+    public PedestrianManager(PedestrianLightManager pedestrianLights,
+                             VehicleManager vehicleManager) {
+
+        this.pedestrianLights = pedestrianLights;
         this.vehicleManager = vehicleManager;
+
         pedestrians = new ArrayList<>();
     }
 
@@ -37,32 +41,21 @@ public class PedestrianManager {
                 // Top: right to left
                 case 0:
                     pedestrian = new Pedestrian(
-                        800,
-                        295,
-                        7,
-                        WALK_SPEED,
-                        (float) Math.PI
+                        800, 295, 7, WALK_SPEED, (float) Math.PI
                     );
                     break;
 
                 // Bottom: left to right
                 case 1:
                     pedestrian = new Pedestrian(
-                        0,
-                        505,
-                        7,
-                        WALK_SPEED,
-                        0
+                        0, 505, 7, WALK_SPEED, 0
                     );
                     break;
 
                 // Left: bottom to top
                 case 2:
                     pedestrian = new Pedestrian(
-                        295,
-                        800,
-                        7,
-                        WALK_SPEED,
+                        295, 800, 7, WALK_SPEED,
                         (float) (3 * Math.PI / 2)
                     );
                     break;
@@ -70,10 +63,7 @@ public class PedestrianManager {
                 // Right: top to bottom
                 case 3:
                     pedestrian = new Pedestrian(
-                        505,
-                        0,
-                        7,
-                        WALK_SPEED,
+                        505, 0, 7, WALK_SPEED,
                         (float) (Math.PI / 2)
                     );
                     break;
@@ -91,7 +81,9 @@ public class PedestrianManager {
             }
 
             handleCrossing(pedestrian);
+
             pedestrian.update(deltaTime);
+
             checkCarCollision(pedestrian);
         }
 
@@ -113,7 +105,7 @@ public class PedestrianManager {
         float x = pedestrian.getX();
         float y = pedestrian.getY();
 
-        // Top crossing
+        // TOP CROSSING
         if (Math.abs(y - 295) < 1) {
 
             if (pedestrian.isCrossing()) {
@@ -129,11 +121,14 @@ public class PedestrianManager {
 
             if (x <= 500 && x > 480) {
 
-                if (verticalRoadIsRed()) {
+                if (pedestrianLights.canCrossTop()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -142,7 +137,7 @@ public class PedestrianManager {
             }
         }
 
-        // Bottom crossing
+        // BOTTOM CROSSING
         if (Math.abs(y - 505) < 1) {
 
             if (pedestrian.isCrossing()) {
@@ -158,11 +153,14 @@ public class PedestrianManager {
 
             if (x >= 300 && x < 320) {
 
-                if (verticalRoadIsRed()) {
+                if (pedestrianLights.canCrossBottom()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -171,7 +169,7 @@ public class PedestrianManager {
             }
         }
 
-        // Left crossing
+        // LEFT CROSSING
         if (Math.abs(x - 295) < 1) {
 
             if (pedestrian.isCrossing()) {
@@ -187,11 +185,14 @@ public class PedestrianManager {
 
             if (y <= 500 && y > 480) {
 
-                if (horizontalRoadIsRed()) {
+                if (pedestrianLights.canCrossLeft()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -200,7 +201,7 @@ public class PedestrianManager {
             }
         }
 
-        // Right crossing
+        // RIGHT CROSSING
         if (Math.abs(x - 505) < 1) {
 
             if (pedestrian.isCrossing()) {
@@ -216,11 +217,14 @@ public class PedestrianManager {
 
             if (y >= 300 && y < 320) {
 
-                if (horizontalRoadIsRed()) {
+                if (pedestrianLights.canCrossRight()) {
+
                     pedestrian.setCrossing(true);
                     pedestrian.setWaiting(false);
                     pedestrian.setSpeed(WALK_SPEED);
+
                 } else {
+
                     pedestrian.setWaiting(true);
                     pedestrian.setSpeed(0);
                 }
@@ -232,18 +236,6 @@ public class PedestrianManager {
         if (!pedestrian.isCrossing() && !pedestrian.isWaiting()) {
             pedestrian.setSpeed(WALK_SPEED);
         }
-    }
-
-    private boolean verticalRoadIsRed() {
-
-        return trafficLights.getLightTop().isRed()
-                && trafficLights.getLightBottom().isRed();
-    }
-
-    private boolean horizontalRoadIsRed() {
-
-        return trafficLights.getLightLeft().isRed()
-                && trafficLights.getLightRight().isRed();
     }
 
     private void checkCarCollision(Pedestrian pedestrian) {

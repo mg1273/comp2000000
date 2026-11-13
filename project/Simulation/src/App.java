@@ -24,8 +24,7 @@ public class App {
 
         pedestrianLights = new PedestrianLightManager(trafficLights);
 
-        pedestrianManager = new PedestrianManager(trafficLights, vehicleManager);
-
+pedestrianManager = new PedestrianManager(pedestrianLights, vehicleManager);
         JFrame frame = new JFrame("Traffic Sim");
 
         JPanel panel = new JPanel() {
@@ -84,7 +83,7 @@ public class App {
 
             vehicleManager.update(deltaTime, worldTimeElapsed);
             trafficLights.update();
-            pedestrianLights.update();
+            pedestrianLights.update();  
             pedestrianManager.update(deltaTime, worldTimeElapsed);
 
             panel.repaint();
